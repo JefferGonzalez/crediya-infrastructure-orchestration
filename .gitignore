@@ -1,2 +1,6 @@
 ### Enviroment variables ###
 .env
+
+### Docker ###
+docker/
+**/docker/

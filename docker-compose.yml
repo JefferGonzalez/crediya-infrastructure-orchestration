@@ -1,4 +1,16 @@
 services:
+  dynamodb-local:
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
+    image: "amazon/dynamodb-local:latest"
+    container_name: dynamodb-local
+    ports:
+      - "8000:8000"
+    volumes:
+     - "./docker/dynamodb:/home/dynamodblocal/data"
+    working_dir: /home/dynamodblocal
+    networks:
+      - crediya-network
+
   postgres:
     image: postgres:17
     container_name: postgres17-db
@@ -76,6 +88,31 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - crediya-network
+
+  crediya-ms-reports:
+    build:
+      context: ../crediya-ms-reports
+      dockerfile: deployment/Dockerfile
+    container_name: crediya-ms-reports
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - PORT=8080
+      - CORS_ALLOWED_ORIGINS=${CORS_REPORTS}
+      - AWS_DYNAMODB_ENDPOINT=http://dynamodb-local:8000
+    ports:
+      - "${MS_REPORTS_PORT}:8080"
+    depends_on:
+      - dynamodb-local
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1" ]
       interval: 30s
