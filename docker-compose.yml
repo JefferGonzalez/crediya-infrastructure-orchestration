@@ -63,7 +63,7 @@ services:
       postgres:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1" ]
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/api/v1/auth/actuator/health || exit 1" ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -89,7 +89,7 @@ services:
       postgres:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1" ]
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/api/v1/loan-applications/actuator/health || exit 1" ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -114,7 +114,7 @@ services:
     depends_on:
       - dynamodb-local
     healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1" ]
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/api/v1/reports/actuator/health || exit 1" ]
       interval: 30s
       timeout: 10s
       retries: 3
